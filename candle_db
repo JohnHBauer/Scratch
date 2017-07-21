@@ -91,39 +91,26 @@ class CandleDB:
             print("Solr delete: must specify either id or q")
     
 #==============================================================================
-# NOT SURE IF THIS WAS EVER USED
+# Keyword arguments in Python:
+# def f(**kwargs):
+#     # kwargs is a dictionary
+# Calling f(a=1, b=2, c=3) is equivalnet to:
+# D = {"a":1, "b":2, "c":3}
+# f(**D)
+# D can be accessed within f as kwargs
 #==============================================================================
-#==============================================================================
-# def experiment_insert(experiment_id,
-#                       benchmark_id  = "unknown",
-#                       dataset_id    = "unknown",
-#                       experiment_title = "untitled",
-#                       description = "_blank",
-#                       optimization_package_name = "unknown",
-#                       optimization_package_version = "unknown",
-#                       objective_function = "unknown",
-#                       search_space = "unknown",
-#                       search_strategy = "unknown",
-#                       max_runs = "unknown",
-#                       status = None,
-#                       start_time = None,
-#                       end_time = None,
-#                       system_description = "unknown",
-#                       keys = None):
-#     set_url("experiment")
-#     D = {
-#             "experiment_id": experiment_id,
-#             "benchmark_id": benchmark_id,
-#             "experiment_title": experiment_title
-#         }
-#     if keys != None: D.update(kv2dict(keys))
-# 
-#     solr.add([ D ])
-# 
-# def params2string(N1, NE):
-#     return "N1=%i,NE=%i" % (N1, NE)
-# 
-#==============================================================================
+
+def experiment_insert(**kwargs):
+    assert kwargs["experiment_id"] is not None, "experiment_id is required!"
+    
+    if "keys" in kwargs.keys():
+        keys = kwargs["keys"]
+        if keys is not None:
+            kwargs.update(kv2dict(keys))
+        del kwargs["keys"]
+    db = CandleDB(core="experiment")
+    db.add(**kwargs)
+    
 def kv2dict(L):
     """ Convert list L of [ K=V... ] to dict { K:V ... } """
     result = {}
