@@ -1,10 +1,25 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
 Created on Tue Aug 15 08:56:53 2017
 
 @author: johnbauer
 """
+
+# =============================================================================
+# ## Simplifies usage from swift-t
+# 
+# import algorithm
+# 
+# gParams = algorithm.initialize_parameters()
+# param_grid = ParamDictionaryGridEnumerator(a=[0.01, 0.02], b=[0,1])
+# 
+# params = gParams.update(param_grid[i])
+# 
+# algorithm.run(params)
+# 
+# ## Pass in an integer value for i with %s
+# =============================================================================
 
 import random
 
@@ -87,9 +102,14 @@ class ParamDictionaryGridIterator(GridIterator):
             yield { k:p for k, p in zip(self.keys, params) }
             
     def __getitem__(self, index):
-        """ Paramater dictionary may be constructed from its sequence number if enumerated
+        """ Paramater dictionary constructed from the sequence number it would have if enumerated
             
             pgi = ParamDictionaryGridIterator(a=[0,1],b=[0,1])
+            print(pgi[3)]
+  
+            {'b': 1, 'a': 1}
+            
+            # equivalence of the iterator and __getitem__:
             for i, param_dict in enumerate(pgi):
                 print(param_dict, " = ", pgi[i])
                 
@@ -121,9 +141,14 @@ class ParamDictionaryGridEnumerator(ParamDictionaryGridIterator):
         return param_dict
     
     def __iter__(self):
-        for param_dict in super(ParamDictionaryGridEnumerator,self).__iter__():
+        for param_dict in super(ParamDictionaryGridEnumerator, self).__iter__():
             yield self._get_id(param_dict)
             
     def sample_iterator(self, k):
         for param_dict in super(ParamDictionaryGridEnumerator, self).sample_iterator(k):
             yield self._get_id(param_dict)
+            
+    def __getitem__(self, index):
+        param_dict = super(ParamDictionaryGridEnumerator, self).__getitem__(index)
+        param_dict[self.run_id] = index
+        return param_dict
